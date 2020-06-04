@@ -1,0 +1,116 @@
+﻿@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Http
+
+@inject NavigationManager NavigationManager
+
+<style>
+
+    .mytree .e-level-1 > .e-text-content .e-list-text {
+        font-style: normal;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .mytree .e-level-2 > .e-text-content .e-list-text {
+        font-style: normal;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 15px;
+        font-weight: normal;
+        color: darkslategrey;
+    }
+
+    .mytree .e-level-3 > .e-text-content .e-list-text {
+        font-weight: bold;
+    }
+</style>
+
+<div class="container-fluid">
+    <h1>Main Menu</h1>
+
+    <Syncfusion.Blazor.Navigations.SfTreeView TValue="MenuItem" CssClass="mytree">
+        <TreeViewFieldsSettings TValue="MenuItem" Id="Id" DataSource="@MyMenu" Text="FolderName" ParentID="ParentId" HasChildren="HasSubFolders" Expanded="Expanded"></TreeViewFieldsSettings>
+        <TreeViewEvents TValue="MenuItem" NodeSelected="OnSelect" NodeClicked="nodeClicked"></TreeViewEvents>
+    </Syncfusion.Blazor.Navigations.SfTreeView>
+
+</div>
+
+@code {
+
+    public class MenuItem
+    {
+        public string Id { get; set; }
+        public string ParentId { get; set; }
+        public string FolderName { get; set; }
+        public bool Expanded { get; set; }
+        public bool HasSubFolders { get; set; }
+        public string URL { get; set; }
+    }
+
+    List<MenuItem> MyMenu = new List<MenuItem>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        MyMenu.Add(new MenuItem
+        {
+            Id = "100",
+            FolderName = "Reporting",
+            HasSubFolders = true,
+            Expanded = true,
+            URL = ""
+        }); ;
+
+        MyMenu.Add(new MenuItem
+        {
+            Id = "101",
+            ParentId = "100",
+            FolderName = "DCR",
+            Expanded = true,
+            HasSubFolders = false,
+            URL = "http://www.onyx-fire.com"
+        }); ;
+
+        MyMenu.Add(new MenuItem
+        {
+            Id = "200",
+            FolderName = "Scheduling",
+            Expanded = true,
+            HasSubFolders = true,
+            URL = ""
+        });;
+
+        MyMenu.Add(new MenuItem
+        {
+            Id = "201",
+            ParentId = "200",
+            FolderName = "Time Card",
+            Expanded = true,
+            HasSubFolders = false,
+            URL = "http://www.microsoft.com"
+        });
+
+    }
+
+    public void OnSelect(NodeSelectEventArgs args)
+    {
+        MenuItem menuItem;
+        string nodeID;
+
+        nodeID = args.NodeData.Id;
+
+        menuItem = (from M in MyMenu where M.Id == nodeID select M).FirstOrDefault();
+
+        if (menuItem.URL != "")
+        {
+            NavigationManager.NavigateTo(menuItem.URL);
+        }
+    }
+
+    public void nodeClicked(NodeClickEventArgs args)
+    {
+        Console.WriteLine();
+    }
+}
